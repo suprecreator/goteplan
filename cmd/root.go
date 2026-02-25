@@ -36,12 +36,14 @@ var RenderMarkdown bool
 var TodoSymbol string
 var NoCaseSearch bool
 var IsSetApp bool
+var Editor string
 
 var basedir_setting_name = "basedir"
 var render_setting_name = "render"
 var todosymbol_setting_name = "todosymbol"
 var nocase_setting_name = "nocase"
 var setapp_setting_name = "setapp"
+var editor_setting_name = "editor"
 
 var appStoreDataLocation = ""
 var setAppDataLocation = "~/Library/Containers/co.noteplan.NotePlan-setapp/Data/Library/Application Support/co.noteplan.NotePlan-setapp"
@@ -78,12 +80,19 @@ func SetupViper() {
 	viper.SetDefault(nocase_setting_name, false)
 	viper.SetDefault(setapp_setting_name, false)
 
+	defaultEditor := os.Getenv("EDITOR")
+	if defaultEditor == "" {
+		defaultEditor = "vim"
+	}
+	viper.SetDefault(editor_setting_name, defaultEditor)
+
 	// Set up flags for rootCmd
 	rootCmd.PersistentFlags().StringVarP(&BaseDir, basedir_setting_name, "b", "", "Root location of the NotePlan data")
 	rootCmd.PersistentFlags().BoolVarP(&RenderMarkdown, render_setting_name, "r", false, "If present, display will attempt to render markdown. If not, source will be shown")
 	rootCmd.PersistentFlags().StringVarP(&TodoSymbol, todosymbol_setting_name, "t", "*", "When using task command, a line starting with this symbol will be considered a task")
 	rootCmd.PersistentFlags().BoolVarP(&NoCaseSearch, nocase_setting_name, "n", false, "If present, searches will be case insensitive")
 	rootCmd.PersistentFlags().BoolVarP(&IsSetApp, setapp_setting_name, "s", false, "If present, SetApp version of Noteplan data location used")
+	rootCmd.PersistentFlags().StringVarP(&Editor, editor_setting_name, "e", "", "Editor to use for editing notes")
 
 	// Connect viper and cobra
 	viper.BindPFlag(basedir_setting_name, rootCmd.PersistentFlags().Lookup(basedir_setting_name))
@@ -91,6 +100,7 @@ func SetupViper() {
 	viper.BindPFlag(todosymbol_setting_name, rootCmd.PersistentFlags().Lookup(todosymbol_setting_name))
 	viper.BindPFlag(nocase_setting_name, rootCmd.PersistentFlags().Lookup(nocase_setting_name))
 	viper.BindPFlag(setapp_setting_name, rootCmd.PersistentFlags().Lookup(setapp_setting_name))
+	viper.BindPFlag(editor_setting_name, rootCmd.PersistentFlags().Lookup(editor_setting_name))
 
 	// Set up how viper reads config
 	viper.SetConfigName(".goteplan")
@@ -119,6 +129,8 @@ func SetupViper() {
 		TodoSymbol = viper.GetString(todosymbol_setting_name)
 		NoCaseSearch = viper.GetBool(nocase_setting_name)
 		IsSetApp = viper.GetBool(setapp_setting_name)
+		Editor = viper.GetString(editor_setting_name)
+
 	}
 }
 

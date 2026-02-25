@@ -38,11 +38,7 @@ var editCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		filename := args[0]
 		path := filepath.Join(BaseDir, filename)
-		editor := os.Getenv("EDITOR")
-
-		if editor == "" {
-			editor = "nano"
-		}
+		editor := Editor
 
 		fmt.Printf("Opening '%v' in '%v'\n\n", path, editor)
 
